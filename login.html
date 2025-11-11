@@ -162,7 +162,7 @@
             localStorage.setItem('authtoken', data.token);
             localStorage.setItem('user', data.user.fullname);
             alert("Login Successful!");
-            location.href = '/frontend/index.html';
+            location.href = '/index.html';
           } else {
             alert(data.message || "Login failed");
           }
