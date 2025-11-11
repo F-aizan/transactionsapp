@@ -83,16 +83,16 @@
       const usertoken = localStorage.getItem('authtoken')
       if(!usertoken) {
         alert("You need to be Logged in first")
-      }else location.href = '/frontend/transactions.html'; // Add Transaction page
+      }else location.href = '/transactions.html'; // Add Transaction page
     });
 
     $('#viewBtnHero').on('click', () => {
       const isAuth = localStorage.getItem('authtoken')
-      isAuth ? location.href = '/frontend/viewData.html' : alert("You need to be LoggedIn") // Transactions page
+      isAuth ? location.href = '/viewData.html' : alert("You need to be LoggedIn") // Transactions page
     });
 
     $('#homeBtn').on('click', () => {
-      location.href = '/frontend/index.html'; // Home page
+      location.href = '/index.html'; // Home page
     });
     $('#auth_btn').on('click', () => {
       const usertoken = localStorage.getItem('authtoken')
@@ -103,13 +103,13 @@
         return
       }
       else{
-        location.href = '/frontend/login.html'
+        location.href = '/login.html'
         return 
       }
     })
 
     $('#signup_btn').on('click', () => {
-      location.href = '/frontend/signup.html'
+      location.href = '/signup.html'
     })
 
     // Toggle mobile menu

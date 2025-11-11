@@ -98,18 +98,18 @@
       }
     })
     $('#homeBtn').on('click', () => {
-      location.href = '/frontend/index.html'; // Home page
+      location.href = '/index.html'; // Home page
     });
     $('#auth_btn').on('click', () => {
       const usertoken = localStorage.getItem('authtoken')
       if(usertoken) {
         localStorage.clear()
         alert("Logged out successfully")
-        location.href = '/frontend/index.html'
+        location.href = '/index.html'
         return
       }
       else{
-        location.href = '/frontend/login.html'
+        location.href = '/login.html'
         return 
       }
     })
