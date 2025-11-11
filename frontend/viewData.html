@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Transactions</title>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-blue-400 to-indigo-500 font-sans">
+
+  <!-- ✅ Single Responsive Navbar -->
+  <nav class="w-full bg-white/30 backdrop-blur-lg shadow-md">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <!-- Logo -->
+      <h1 class="text-2xl font-bold text-white">💸 Transaction App</h1>
+
+      <!-- Hamburger Button (Mobile Only) -->
+      <button id="menuBtn" class="md:hidden text-white focus:outline-none transition-transform duration-300">
+        <svg id="menuIcon" xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none"
+             viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
+      <!-- Nav Links -->
+      <div id="menuLinks"
+           class="hidden md:flex flex-col md:flex-row md:items-center md:space-x-6 absolute md:static top-16 left-0 w-full md:w-auto bg-white/20 md:bg-transparent backdrop-blur-lg md:backdrop-blur-0 shadow-lg md:shadow-none md:p-0 p-5 transition-all duration-300">
+        <button id="homeBtn"
+          class="text-white hover:text-yellow-200 font-medium py-2 md:py-0">Home</button>
+        <button id="auth_btn"
+          class="text-white hover:text-yellow-200 font-medium py-2 md:py-0">Login</button>
+        <button id="signup_btn"
+          class="text-white hover:text-yellow-200 font-medium py-2 md:py-0">SignUp</button>
+      </div>
+    </div>
+  </nav>
+  
+<div class="min-h-screen bg-gradient-to-br from-blue-400 to-indigo-500 flex flex-col items-center py-10 font-sans">
+  <h1 class="text-3xl font-extrabold text-white mb-8 drop-shadow-lg">💰 Transaction History</h1>
+
+  <div id="loading" class="text-white font-semibold animate-pulse">Fetching transactions...</div>
+
+  
+
+  <div id="tran_container"
+       class="w-full max-w-3xl grid grid-cols-1 md:grid-cols-2 gap-6 px-6 hidden">
+    <!-- Transactions will appear here -->
+  </div>
+  </div>
+
+      <!-- Footer -->
+      <footer class="text-center text-white py-4 bg-black/30 backdrop-blur-md">
+        <p class="text-sm">&copy; 2025 Transaction Manager — Built with ❤️ using Express, TailwindCSS & jQuery</p>
+      </footer>
+
+  <script>
+    $('#homeBtn').on('click', () => {
+      location.href = '/frontend/index.html'; // Home page
+    });
+    $('#auth_btn').on('click', () => {
+      const usertoken = localStorage.getItem('authtoken')
+      if(usertoken) {
+        localStorage.clear()
+        alert("Logged out successfully")
+        location.href = '/frontend/index.html'
+        return
+      }
+      else{
+        location.href = '/frontend/login.html'
+        return 
+      }
+    })
+    $('#signup_btn').on('click', () => {
+      location.href = '/frontend/signup.html'
+    })
+    $(document).ready(() => {
+      const isAuth = localStorage.getItem('authtoken')
+      const logged_in_user = localStorage.getItem('user')
+      if(isAuth) {
+        $("#signup_btn").addClass('hidden')
+        $("#auth_btn").text("Logout")
+      } else {
+        $("#auth_btn").text("Login")
+      }
+      
+      $.ajax({
+        url: 'http://localhost:3000/transactions',
+        method: 'GET',
+        dataType: 'json',
+        data:{"authUser": logged_in_user},
+        success: function (data) {
+          $("#loading").hide();
+          $("#tran_container").removeClass("hidden");
+
+          if (data.transactions.length === 0) {
+            $("#tran_container").html(`
+              <div class="col-span-full text-center text-white text-lg font-medium">
+                No transactions found 💤
+              </div>
+            `);
+            return;
+          }
+
+          data.transactions.forEach((txn) => {
+            const card = `
+              <div class="bg-white rounded-xl shadow-lg p-5 flex flex-col gap-2 hover:scale-[1.02] transition-all duration-200">
+                <h2 class="text-xl font-semibold text-indigo-600">${txn.txn_name}</h2>
+                <p class="text-gray-600 text-sm">💵 Amount: <span class="font-medium text-gray-800">₹${txn.txn_amount}</span></p>
+                <p class="text-gray-600 text-sm">📅 Date: <span class="font-medium text-gray-800">${txn.txn_date}</span></p>
+              </div>
+            `;
+            $("#tran_container").append(card);
+          });
+        },
+        error: function (xhr, status, error) {
+          $("#loading").text("❌ Failed to load transactions. Please try again.");
+          console.error("Error occurred:", error);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

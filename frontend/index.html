@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Transaction Manager</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body class="bg-gradient-to-br from-indigo-500 via-blue-400 to-cyan-400 min-h-screen flex flex-col font-sans">
+
+  <!-- ✅ Single Responsive Navbar -->
+  <nav class="w-full bg-white/30 backdrop-blur-lg shadow-md">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <!-- Logo -->
+      <h1 class="text-2xl font-bold text-white">💸 Transaction App</h1>
+
+      <!-- Hamburger Button (Mobile Only) -->
+      <button id="menuBtn" class="md:hidden text-white focus:outline-none transition-transform duration-300">
+        <svg id="menuIcon" xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none"
+             viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
+      <!-- Nav Links -->
+      <div id="menuLinks"
+           class="hidden md:flex flex-col md:flex-row md:items-center md:space-x-6 absolute md:static top-16 left-0 w-full md:w-auto bg-white/20 md:bg-transparent backdrop-blur-lg md:backdrop-blur-0 shadow-lg md:shadow-none md:p-0 p-5 transition-all duration-300">
+        <button id="homeBtn"
+          class="text-white hover:text-yellow-200 font-medium py-2 md:py-0">Home</button>
+        <button id="auth_btn"
+          class="text-white hover:text-yellow-200 font-medium py-2 md:py-0">Login</button>
+        <button id="signup_btn"
+          class="text-white hover:text-yellow-200 font-medium py-2 md:py-0">SignUp</button>
+        <p id="user_greeting" class="hidden font-bold text-md text-white">Hi</p>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="flex flex-col items-center justify-center text-center flex-grow px-6">
+    <h2 class="text-5xl font-extrabold text-white drop-shadow-lg mb-4">Track Your Finances Easily</h2>
+    <p class="text-lg text-white/90 mb-8 max-w-xl">
+      Manage, analyze, and grow your savings by keeping track of every transaction.
+    </p>
+    <div class="flex gap-4">
+      <button id="startBtn"
+        class="bg-yellow-400 hover:bg-yellow-500 text-gray-800 px-6 py-3 rounded-lg font-semibold shadow-lg transition-all duration-300">
+        🚀 Get Started
+      </button>
+      <button id="viewBtnHero"
+        class="bg-white hover:bg-gray-100 text-indigo-600 px-6 py-3 rounded-lg font-semibold shadow-lg transition-all duration-300">
+        📄 View Transactions
+      </button>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="text-center text-white py-4 bg-black/30 backdrop-blur-md">
+    <p class="text-sm">&copy; 2025 Transaction Manager — Built with ❤️ using Express, TailwindCSS & jQuery</p>
+  </footer>
+
+  <script>
+
+    $(document).ready(() => {
+      const usertoken = localStorage.getItem('authtoken')
+      if(usertoken) {
+        $("#auth_btn").text("Logout")
+        $("#user_greeting").text(`Hi, ${localStorage.getItem('user')}`).removeClass('hidden') 
+        $("#signup_btn").addClass('hidden')
+      }  
+      else {
+        $("#auth_btn").text("Login")
+
+      }
+    })
+
+    // Redirect buttons
+    $('#startBtn').on('click', () => {
+      const usertoken = localStorage.getItem('authtoken')
+      if(!usertoken) {
+        alert("You need to be Logged in first")
+      }else location.href = '/frontend/transactions.html'; // Add Transaction page
+    });
+
+    $('#viewBtnHero').on('click', () => {
+      const isAuth = localStorage.getItem('authtoken')
+      isAuth ? location.href = '/frontend/viewData.html' : alert("You need to be LoggedIn") // Transactions page
+    });
+
+    $('#homeBtn').on('click', () => {
+      location.href = '/frontend/index.html'; // Home page
+    });
+    $('#auth_btn').on('click', () => {
+      const usertoken = localStorage.getItem('authtoken')
+      if(usertoken) {
+        localStorage.clear()
+        alert("Logged out successfully")
+        location.reload()
+        return
+      }
+      else{
+        location.href = '/frontend/login.html'
+        return 
+      }
+    })
+
+    $('#signup_btn').on('click', () => {
+      location.href = '/frontend/signup.html'
+    })
+
+    // Toggle mobile menu
+    const menuBtn = document.getElementById("menuBtn");
+    const menuLinks = document.getElementById("menuLinks");
+    const menuIcon = document.getElementById("menuIcon");
+    let menuOpen = false;
+
+    menuBtn.addEventListener("click", () => {
+      menuLinks.classList.toggle("hidden");
+      menuOpen = !menuOpen;
+
+      // Toggle icon between hamburger ↔ X
+      menuIcon.innerHTML = menuOpen
+        ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                 d="M6 18L18 6M6 6l12 12" />`
+        : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                 d="M4 6h16M4 12h16M4 18h16" />`;
+    });
+
+    // Close menu after clicking a link on mobile
+    document.querySelectorAll("#menuLinks button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (window.innerWidth < 768) {
+          menuLinks.classList.add("hidden");
+          menuOpen = false;
+          menuIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                 d="M4 6h16M4 12h16M4 18h16" />`;
+        }
+      });
+    });
+  </script>
+</body>
+</html>

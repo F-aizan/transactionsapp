@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Transactions App</title>
+</head>
+
+<body class="bg-gradient-to-br from-indigo-500 via-blue-400 to-cyan-400 min-h-screen font-sans">
+
+  <!-- ✅ Single Responsive Navbar -->
+  <nav class="w-full bg-white/30 backdrop-blur-lg shadow-md">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <!-- Logo -->
+      <h1 class="text-2xl font-bold text-white">💸 Transaction App</h1>
+
+      <!-- Hamburger Button (Mobile Only) -->
+      <button id="menuBtn" class="md:hidden text-white focus:outline-none transition-transform duration-300">
+        <svg id="menuIcon" xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none"
+             viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+
+      <!-- Nav Links -->
+      <div id="menuLinks"
+           class="hidden md:flex flex-col md:flex-row md:items-center md:space-x-6 absolute md:static top-16 left-0 w-full md:w-auto bg-white/20 md:bg-transparent backdrop-blur-lg md:backdrop-blur-0 shadow-lg md:shadow-none md:p-0 p-5 transition-all duration-300">
+        <button id="homeBtn"
+          class="text-white hover:text-yellow-200 font-medium py-2 md:py-0">Home</button>
+        <button id="auth_btn"
+          class="text-white hover:text-yellow-200 font-medium py-2 md:py-0">Login</button>
+        <button id="signup_btn"
+          class="text-white hover:text-yellow-200 font-medium py-2 md:py-0">SignUp</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="min-h-screen bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center font-sans">
+  <!-- Card -->
+  <div class="bg-white shadow-2xl rounded-2xl p-10 w-full max-w-md relative">
+    <h1 class="text-3xl font-bold text-center text-indigo-600 mb-2">Add Transaction</h1>
+    <p class="text-center text-gray-500 mb-8">Record your recent transaction below</p>
+
+    <form id="conform" class="flex flex-col gap-6">
+      <div>
+        <label for="txn_name" class="block text-gray-700 font-medium mb-2">Name</label>
+        <input required id="txn_name" type="text" placeholder="e.g. Grocery Shopping"
+          class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-200">
+      </div>
+
+      <div>
+        <label for="amount" class="block text-gray-700 font-medium mb-2">Amount</label>
+        <input required id="amount" type="number" step="0.01" placeholder="e.g. 45.50"
+          class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-200">
+      </div>
+
+      <div>
+        <label for="txn_date" class="block text-gray-700 font-medium mb-2">Date</label>
+        <input required id="txn_date" type="date"
+          class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400 transition-all duration-200">
+      </div>
+
+      <button type="submit"
+        class="mt-4 bg-indigo-500 text-white font-semibold py-3 rounded-lg hover:bg-indigo-600 transition-all duration-200 disabled:bg-indigo-300 disabled:cursor-not-allowed">
+        Submit Transaction
+      </button>
+    </form>
+
+    <!-- Status message -->
+    <p id="statusMessage" class="text-center text-sm mt-6"></p>
+
+    <!-- Spinner overlay -->
+    <div id="spinnerOverlay"
+      class="hidden absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center rounded-2xl">
+      <div class="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+      <p class="text-gray-700 font-medium">Adding transaction...</p>
+    </div>
+  </div>
+  </div>
+
+      <!-- Footer -->
+      <footer class="text-center text-white py-4 bg-black/30 backdrop-blur-md">
+        <p class="text-sm">&copy; 2025 Transaction Manager — Built with ❤️ using Express, TailwindCSS & jQuery</p>
+      </footer>
+
+  <script>
+    $(document).ready(() => {
+      const isAuth = localStorage.getItem('authtoken')
+      if(isAuth) {
+        $("#signup_btn").addClass('hidden')
+        $("#auth_btn").text("Logout")
+      } else{
+        $("#auth_btn").text("Login")
+      }
+    })
+    $('#homeBtn').on('click', () => {
+      location.href = '/frontend/index.html'; // Home page
+    });
+    $('#auth_btn').on('click', () => {
+      const usertoken = localStorage.getItem('authtoken')
+      if(usertoken) {
+        localStorage.clear()
+        alert("Logged out successfully")
+        location.href = '/frontend/index.html'
+        return
+      }
+      else{
+        location.href = '/frontend/login.html'
+        return 
+      }
+    })
+    $("#conform").on("submit", function (e) {
+      e.preventDefault();
+
+      const transaction = {
+        name: $("#txn_name").val(),
+        amount: $("#amount").val(),
+        txn_username: localStorage.getItem('user'),
+        date: $("#txn_date").val()
+      };
+
+      // Show spinner
+      $("#spinnerOverlay").removeClass("hidden");
+      $("button[type=submit]").prop("disabled", true);
+      $("#statusMessage").text("");
+
+      $.ajax({
+        url: "http://localhost:3000/transaction",
+        method: "POST",
+        contentType: "application/json",
+        data: JSON.stringify(transaction),
+        success: function (response) {
+          $("#spinnerOverlay").addClass("hidden");
+          $("button[type=submit]").prop("disabled", false);
+          $("#conform")[0].reset();
+          $("#statusMessage")
+            .text("✅ Transaction added successfully!")
+            .removeClass("text-red-500")
+            .addClass("text-green-600 font-medium");
+        },
+        error: function (xhr, status, error) {
+          $("#spinnerOverlay").addClass("hidden");
+          $("button[type=submit]").prop("disabled", false);
+          console.error("Error:", error);
+          $("#statusMessage")
+            .text("❌ Failed to add transaction. Please try again.")
+            .removeClass("text-green-600")
+            .addClass("text-red-500 font-medium");
+        }
+      });
+    });
+  </script>
+</body>
+</html>
