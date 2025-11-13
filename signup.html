@@ -108,9 +108,9 @@
   <!-- ✅ Script Section -->
   <script>
     // Navbar navigation
-    $('#homeBtn').on('click', () => location.href = '/frontend/index.html');
-    $('#login_btn').on('click', () => location.href = '/frontend/login.html');
-    $('#signup_btn').on('click', () => location.href = '/frontend/signup.html');
+    $('#homeBtn').on('click', () => location.href = '/index.html');
+    $('#login_btn').on('click', () => location.href = '/login.html');
+    $('#signup_btn').on('click', () => location.href = '/signup.html');
 
     // Hamburger toggle
     $('#menuBtn').on('click', () => {
@@ -209,7 +209,7 @@
           success: function(data, status, jqxhr) {
             if (jqxhr.status === 200) {
               alert("User registered successfully!");
-              location.href = '/frontend/login.html';
+              location.href = '/login.html';
             } else {
               alert("Signup failed. Try again.");
             }
