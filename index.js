@@ -17,7 +17,7 @@ app.get('/transactions', async(req, res) => {
     try {
         const db = connectDB()
         const {authUser} = req.body
-        const queryText = `SELECT * FROM "Transactions" where txn_username = $1`
+        const queryText = `SELECT * FROM transactions where txn_username = $1`
         if(db) {
             const data = await db.query(queryText, [authUser])
             return res.json({"transactions": data.rows}).status(200)
@@ -34,7 +34,7 @@ app.post('/transaction', async(req, res) => {
         const {name, amount, txn_username, date} = req.body
         console.log(req.body)
         if(db) {
-          const queryText = `INSERT INTO "Transactions" (txn_name, txn_amount, txn_username, txn_date) VALUES ($1, $2, $3, $4)`
+          const queryText = `INSERT INTO transactions (txn_name, txn_amount, txn_username, txn_date) VALUES ($1, $2, $3, $4)`
         const result = await db.query(queryText, [name, amount, txn_username, date])
 
             if(result.rowCount > 0) {

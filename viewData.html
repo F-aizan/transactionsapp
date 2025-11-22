@@ -95,7 +95,7 @@
         success: function (data) {
           $("#loading").hide();
           $("#tran_container").removeClass("hidden");
-
+          console.log(data)
           if (data.transactions.length === 0) {
             $("#tran_container").html(`
               <div class="col-span-full text-center text-white text-lg font-medium">
