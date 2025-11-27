@@ -161,10 +161,11 @@
           if (jqxhr.status === 200 && data.token) {
             localStorage.setItem('authtoken', data.token);
             localStorage.setItem('user', data.user.fullname);
-            alert("Login Successful!");
+            alert(data.message);
             location.href = '/index.html';
-          } else {
-            alert(data.message || "Login failed");
+          } 
+          if(jqxhr.status === 401) {
+            alert("Invalid email or password")
           }
         },
         error: function (jqxhr, status, error) {
